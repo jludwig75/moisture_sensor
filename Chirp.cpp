@@ -30,7 +30,7 @@ void Chirp::begin() {
   Wire.begin(_sda, _scl);
 }
 
-void Chirp::read_sensors() {
+void Chirp::read_sensors(unsigned long & moisture_level, unsigned long & temperature, unsigned long & light_level) {
   power_on();
   reset_device();
 
@@ -40,16 +40,20 @@ void Chirp::read_sensors() {
     delay(1000);
     Serial.print(".");
   }
+
+  moisture_level = capacitance;
   
   Serial.print("Reading device sensors...\n");
   Serial.print(capacitance); //read capacitance register
   Serial.print(", ");
   //delay(100);
-  Serial.print(readI2CRegister16bit(0x20, 5)); //temperature register
+  temperature = readI2CRegister16bit(0x20, 5);
+  Serial.print(temperature); //temperature register
   Serial.print(", ");
   writeI2CRegister8bit(0x20, 3); //request light measurement 
   //delay(600);
-  Serial.println(readI2CRegister16bit(0x20, 4)); //read light register
+  light_level = readI2CRegister16bit(0x20, 4);
+  Serial.println(light_level); //read light register
 
   power_off();
 }

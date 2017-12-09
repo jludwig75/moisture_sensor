@@ -83,7 +83,7 @@ public:
     }
 
 protected:
-    void on(const char* uri, void (_T::*fn)())
+  void on(const char* uri, void (_T::*fn)())
 	{
 		on(uri, HTTP_ANY, fn);
 	}
