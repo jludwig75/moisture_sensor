@@ -12,9 +12,16 @@ class MoistureSensorApp : public OOWebServer<MoistureSensorApp> {
     void server_begin();
     void on_loop();
   private:
-    void check_sensors();
+    void handle_root();
+    
+    void check_sensors(bool check_now = false);
+    
     Chirp *_chirp;
     unsigned _sensor_read_interval_seconds;
     unsigned long _last_sensor_read_time = 0;
+
+    unsigned long _moisture_level;
+    unsigned long _temperature;
+    unsigned long _light_level;
 };
 

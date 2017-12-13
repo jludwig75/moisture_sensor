@@ -14,6 +14,8 @@ MoistureSensorApp::MoistureSensorApp(Chirp *chirp, const String &templates_base_
 void MoistureSensorApp::server_begin()
 {
   _chirp->begin();
+
+  on("/", &MoistureSensorApp::handle_root);
 }
 
 void MoistureSensorApp::on_loop()
@@ -22,19 +24,22 @@ void MoistureSensorApp::on_loop()
   handleClient();
 }
 
-void MoistureSensorApp::check_sensors()
+void MoistureSensorApp::check_sensors(bool check_now)
 {
   unsigned long t = millis();
 
-  if (((t - _last_sensor_read_time) / 1000) > _sensor_read_interval_seconds)
+  if (check_now || _last_sensor_read_time == 0 || ((t - _last_sensor_read_time) / 1000) > _sensor_read_interval_seconds)
   {
-    unsigned long moisture_level;
-    unsigned long temperature;
-    unsigned long light_level;
-    
-    _chirp->read_sensors(moisture_level, temperature, light_level);
-    Serial.printf("Moisture: %lu, Temperature: %lu, Light Level: %lu\n", moisture_level, temperature, light_level);
+    _chirp->read_sensors(_moisture_level, _temperature, _light_level);
+    Serial.printf("Moisture: %lu, Temperature: %lu, Light Level: %lu\n", _moisture_level, _temperature, _light_level);
     _last_sensor_read_time = t;
   }
+}
+
+void MoistureSensorApp::handle_root()
+{
+  check_sensors(true);
+    
+  render_page(String("Moisture level = ") + _moisture_level + "\n");
 }
 
